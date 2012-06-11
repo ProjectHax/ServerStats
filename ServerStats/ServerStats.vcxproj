@@ -43,6 +43,8 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\boost_1_49_0;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\boost_1_49_0\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -100,6 +102,9 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="serverstats.cpp" />
+    <ClCompile Include="shared\blowfish.cpp" />
+    <ClCompile Include="shared\silkroad_security.cpp" />
+    <ClCompile Include="shared\stream_utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="serverstats.h">
@@ -129,6 +134,9 @@
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_serverstats.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="shared\blowfish.h" />
+    <ClInclude Include="shared\silkroad_security.h" />
+    <ClInclude Include="shared\stream_utility.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="serverstats.qrc">

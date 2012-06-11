@@ -25,6 +25,9 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="shared">
+      <UniqueIdentifier>{314a4472-7d9d-43f2-9d51-d9fc70152d68}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_serverstats.cpp">
@@ -40,6 +43,15 @@
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shared\blowfish.cpp">
+      <Filter>shared</Filter>
+    </ClCompile>
+    <ClCompile Include="shared\silkroad_security.cpp">
+      <Filter>shared</Filter>
+    </ClCompile>
+    <ClCompile Include="shared\stream_utility.cpp">
+      <Filter>shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="serverstats.ui">
@@ -58,6 +70,15 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resource Files\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\blowfish.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\silkroad_security.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\stream_utility.h">
+      <Filter>shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -28,6 +28,9 @@
     <Filter Include="shared">
       <UniqueIdentifier>{314a4472-7d9d-43f2-9d51-d9fc70152d68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{36b47127-3543-4a11-bdba-a9a0607eda9b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_serverstats.cpp">
@@ -52,6 +55,18 @@
     <ClCompile Include="shared\stream_utility.cpp">
       <Filter>shared</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_serveredit.cpp">
+      <Filter>Resource Files\Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_serveredit.cpp">
+      <Filter>Resource Files\Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="serveredit.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Config\config.cpp">
+      <Filter>Config</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="serverstats.ui">
@@ -61,6 +76,12 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="serverstats.h">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="serveredit.ui">
+      <Filter>Resource Files\Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="serveredit.h">
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -79,6 +100,12 @@
     </ClInclude>
     <ClInclude Include="shared\stream_utility.h">
       <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_serveredit.h">
+      <Filter>Resource Files\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Config\config.h">
+      <Filter>Config</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

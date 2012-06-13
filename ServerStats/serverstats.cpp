@@ -1,14 +1,9 @@
 #include "serverstats.h"
 
-#include <QTableWidgetItem>
-
-#include <vector>
-#include <string>
-
-#include <boost/tuple/tuple.hpp>
+ServerStatsConfig Config;
 
 //Constructor
-ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, flags)
+ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, flags), server_locale(0)
 {
 	//Sets up the user interface
 	ui.setupUi(this);
@@ -18,6 +13,7 @@ ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, fl
 
 	//Connect menu items
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
+	connect(ui.actionEdit, SIGNAL(triggered()), this, SLOT(Edit()));
 
 	//Resize tabs
 	ui.tableServerStats->horizontalHeader()->setUpdatesEnabled(false);
@@ -40,8 +36,27 @@ ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, fl
 	connect(packet_timer, SIGNAL(timeout()), this, SLOT(ProcessPackets()));
 	packet_timer->start(50);	//50 milliseconds
 
-	//Connect
-	socket->connectToHost("gwgt1.joymax.com", 15779);
+	//Load the config
+	QString path = QCoreApplication::applicationFilePath();
+	path = path.mid(0, path.lastIndexOf("/")) + "/config.xml";
+	Config.Load(path.toAscii().data());
+
+	//Load menu items
+	ReloadServers();
+
+	//Find the server that will connect on start up
+	for(std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.begin(); itr != Config.servers.end(); ++itr)
+	{
+		if(itr->second.connect)
+		{
+			//Set the locale
+			server_locale = itr->second.locale;
+
+			//Connect
+			socket->connectToHost(itr->second.hostname.c_str(), itr->second.port);
+			break;
+		}
+	}
 }
 
 //Destructor
@@ -84,7 +99,6 @@ void ServerStats::ProcessPackets()
 		while(security->HasPacketToRecv())
 		{
 			PacketContainer container = security->GetPacketToRecv();
-			StreamUtility & r = container.data;
 
 			//Packet processing
 			switch(container.opcode)
@@ -93,10 +107,10 @@ void ServerStats::ProcessPackets()
 				case SERVER_VERSION:
 				{
 					StreamUtility w;
-					w.Write<uint8_t>(18);			//Locale
-					w.Write<uint16_t>(9);			//Length of 'SR_Client'
+					w.Write<uint8_t>(server_locale);	//Locale
+					w.Write<uint16_t>(9);				//Length of 'SR_Client'
 					w.Write_Ascii("SR_Client");
-					w.Write<uint32_t>(123);			//Version
+					w.Write<uint32_t>(123);				//Version
 					Inject(0x6100, w, true);
 				}break;
 				//Update info
@@ -107,8 +121,10 @@ void ServerStats::ProcessPackets()
 				//Server stats
 				case SERVER_SERVER_STATS:
 				{
+					StreamUtility & r = container.data;
+
 					size_t num_count = 0;
-					std::vector<boost::tuple<QString, QString, int, int> > servers;
+					std::vector<boost::tuple<std::string, QString, int, int> > servers;
 
 					uint8_t entry = r.Read<uint8_t>();
 					while(entry == 1)
@@ -130,37 +146,89 @@ void ServerStats::ProcessPackets()
 
 						//Server name
 						std::string name = r.Read_Ascii(r.Read<uint16_t>());
-						
+
 						//Country flag check (if each server has a number in front of it then it's iSRO/SilkroadR)
 						if(name.find_first_of("0123456789.") == 0)
 							num_count++;
+						
+						int current = 0;
+						int max = 0;
 
-						//Server ratio or current/max
-						float ratio = r.Read<float>();
-						int current = static_cast<int>(3500.0f * ratio);
-						int max = 3500;
+						//iSRO / SilkroadR
+						if(server_locale == 18 || server_locale == 65)
+						{
+							float ratio = r.Read<float>();
+							current = static_cast<int>(3500.0f * ratio);
+							max = 3500;
+						}
+						//Everything else
+						else
+						{
+							current = static_cast<int>(r.Read<uint16_t>());
+							max = static_cast<int>(r.Read<uint16_t>());
+						}
 
 						//Server state (open or closed)
 						QString state = (r.Read<uint8_t>() == 1 ? "Open" : "Closed");
 
+						if(server_locale == 4 || server_locale == 23)
+							r.Read<uint8_t>();
+
 						//Add server to list
-						servers.push_back(boost::tuple<QString, QString, int, int>(name.c_str(), state, current, max));
+						servers.push_back(boost::tuple<std::string, QString, int, int>(name, state, current, max));
 
 						//Next
 						entry = r.Read<uint8_t>();
 					}
 
+					//Set the number of rows
 					ui.tableServerStats->setRowCount(servers.size());
-					for(size_t x = 0; x < servers.size(); ++x)
+
+					//Disable sorting so the rows don't get messed up when updating the servers
+					ui.tableServerStats->setSortingEnabled(false);
+
+					QTextCodec* codec = 0;
+
+					if(server_locale == 2)			//kSRO
+						codec = QTextCodec::codecForName("EUC-KR");
+					else if(server_locale == 4)		//cSRO
+						codec = QTextCodec::codecForName("GB18030");
+					else if(server_locale == 15)	//jSRO
+						codec = QTextCodec::codecForName("EUC-JP");
+					else if(server_locale == 40)	//rSRO
+						codec = QTextCodec::codecForName("Windows-1251");
+
+					for(int x = 0; x < static_cast<int>(servers.size()); ++x)
 					{
-						//Add server to table
-						ui.tableServerStats->setItem(static_cast<int>(x), 0, new QTableWidgetItem(num_count == servers.size() ? servers[x].get<0>().mid(1) : servers[x].get<0>()));
-						ui.tableServerStats->setItem(static_cast<int>(x), 1, new QTableWidgetItem(servers[x].get<1>()));
-						ui.tableServerStats->setItem(static_cast<int>(x), 2, new QTableWidgetItem(QString("%0").arg(servers[x].get<2>())));
-						ui.tableServerStats->setItem(static_cast<int>(x), 3, new QTableWidgetItem(QString("%0").arg(servers[x].get<3>())));
+						QString name;
+
+						//See if the codec was found
+						if(codec)
+							name = codec->toUnicode(servers[x].get<0>().c_str());
+						else
+							name = servers[x].get<0>().c_str();
+
+						//Server name
+						ui.tableServerStats->setItem(x, 0, new QTableWidgetItem(num_count == servers.size() ? name.mid(1) : name));
+
+						//Server state
+						ui.tableServerStats->setItem(x, 1, new QTableWidgetItem(servers[x].get<1>()));
+
+						//Current
+						QTableWidgetItem* item = new QTableWidgetItem;
+						item->setData(Qt::DisplayRole, servers[x].get<2>());
+						ui.tableServerStats->setItem(x, 2, item);
+
+						//Max
+						item = new QTableWidgetItem;
+						item->setData(Qt::DisplayRole, servers[x].get<3>());
+						ui.tableServerStats->setItem(x, 3, item);
 					}
 
-					//Restart timer
+					//Enable sorting
+					ui.tableServerStats->setSortingEnabled(true);
+
+					//Restart the stats timer
 					stats_timer.restart();
 				}break;
 				default:
@@ -175,7 +243,7 @@ void ServerStats::ProcessPackets()
 			//Request servers stats
 			Inject(CLIENT_SERVER_STATS, true);
 
-			//Restart timer
+			//Restart the stats timer
 			stats_timer.restart();
 		}
 
@@ -186,5 +254,80 @@ void ServerStats::ProcessPackets()
 			std::vector<uint8_t> packet = security->GetPacketToSend();
 			socket->write(reinterpret_cast<char*>(&packet[0]), packet.size());
 		}
+	}
+}
+
+//Displays the server editor
+void ServerStats::Edit()
+{
+	//Display the server editor window
+	ServerEdit edit(this);
+	edit.exec();
+
+	//Reload menu items
+	ReloadServers();
+
+	//Save the changes
+	Config.Save(Config.configpath);
+}
+
+//Menu item clicked
+void ServerStats::MenuBarClicked(QAction* action)
+{
+	QString text = action->text();
+	if(text != "File" && text != "Servers" && text != "Exit" && text != "Edit")
+	{
+		//Locate server
+		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(text.toAscii().data());
+
+		//Not found
+		if(itr == Config.servers.end())
+		{
+			QMessageBox::critical(this, "Error", QString("Could not load the server settings for '%0'").arg(text));
+		}
+		else
+		{
+			//Invalidate the timer so no packets will be sent before the first server stats packet is received
+			stats_timer.invalidate();
+
+			//Disconnect first if there is an active connection
+			if(socket->state() != QAbstractSocket::UnconnectedState)
+			{
+				socket->close();
+			}
+
+			//Set the locale
+			server_locale = itr->second.locale;
+
+			//Connect
+			socket->connectToHost(itr->second.hostname.c_str(), itr->second.port);
+
+			//Clear server stats table
+			ui.tableServerStats->setRowCount(0);
+		}
+	}
+}
+
+//Reloads server menu items
+void ServerStats::ReloadServers()
+{
+	//Remove menu options
+	QList<QAction*> actions = ui.menuServers->actions();
+	for(int x = 0; x < actions.size(); ++x)
+	{
+		if(actions[x]->text() != "Edit")
+		{
+			delete actions[x];
+		}
+	}
+
+	ui.menuServers->addSeparator();
+
+	//Reload servers
+	for(std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.begin(); itr != Config.servers.end(); ++itr)
+	{
+		QAction* action = new QAction(ui.menuServers);
+		action->setText(itr->first.c_str());
+		ui.menuServers->addAction(action);
 	}
 }

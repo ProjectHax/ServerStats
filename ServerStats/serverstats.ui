@@ -64,7 +64,7 @@
     </rect>
    </property>
    <property name="contextMenuPolicy">
-    <enum>Qt::CustomContextMenu</enum>
+    <enum>Qt::DefaultContextMenu</enum>
    </property>
    <property name="editTriggers">
     <set>QAbstractItemView::NoEditTriggers</set>
@@ -111,5 +111,25 @@
  <resources>
   <include location="serverstats.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>menubar</sender>
+   <signal>triggered(QAction*)</signal>
+   <receiver>ServerStatsClass</receiver>
+   <slot>MenuBarClicked(QAction*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>71</x>
+     <y>11</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>284</x>
+     <y>455</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>MenuBarClicked(QAction*)</slot>
+ </slots>
 </ui>

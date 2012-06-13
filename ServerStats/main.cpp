@@ -2,6 +2,11 @@
 #include "serverstats.h"
 #include <QtGui/QApplication>
 
+//This is used for displaying the correct characters for Korean, Chinese, and Japanese languages
+Q_IMPORT_PLUGIN(qkrcodecs)
+Q_IMPORT_PLUGIN(qcncodecs)
+Q_IMPORT_PLUGIN(qjpcodecs)
+
 #if _WIN32 && _DEBUG
 #include "io.h"
 #include "fcntl.h"

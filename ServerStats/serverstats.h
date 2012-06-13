@@ -1,17 +1,29 @@
+#pragma once
+
 #ifndef SERVERSTATS_H
 #define SERVERSTATS_H
 
 #include <QtGui/QWidget>
 #include "ui_serverstats.h"
+#include "serveredit.h"
+
+#include <stdint.h>
+#include <string>
+#include <vector>
 
 #include <QtNetwork>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QTableWidgetItem>
+#include <QMessageBox>
+#include <QClipboard>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/tuple/tuple.hpp>
 
 #include "shared/silkroad_security.h"
+#include "Config/config.h"
 
 enum Server_Opcodes : uint16_t
 {
@@ -49,9 +61,15 @@ private:
 	//Timer for sending server stats request packet
 	QElapsedTimer stats_timer;
 
+	//Selected server locale
+	uint8_t server_locale;
+
 	//Packet injection functions
 	void Inject(uint16_t opcode, StreamUtility & stream, bool encrypted) { if(security) security->Send(opcode, stream, encrypted); }
 	void Inject(uint16_t opcode, bool encrypted) { if(security) security->Send(opcode, 0, 0, encrypted); }
+
+	//Reloads server menu items
+	void ReloadServers();
 
 private slots:
 		
@@ -64,6 +82,12 @@ private slots:
 	//Process packets
 	void ProcessPackets();
 
+	//Displays the server editor
+	void Edit();
+
+	//Menu item clicked
+	void MenuBarClicked(QAction* action);
+
 public:
 
 	//Constructor
@@ -71,7 +95,6 @@ public:
 
 	//Destructor
 	~ServerStats();
-
 };
 
 #endif

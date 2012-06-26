@@ -4,3 +4,6 @@ Requirements:
 Visual Studio 2010
 Qt
 Boost
+
+You will need to make sure that both the boost path and Qt plugin lib
+paths are both setup correctly in the Visual C++ settings.

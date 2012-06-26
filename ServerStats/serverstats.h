@@ -58,11 +58,11 @@ private:
 	//Packet processing timer
 	QTimer* packet_timer;
 
+	//Connect timeout timer
+	QTimer* connect_timeout;
+
 	//Timer for sending server stats request packet
 	QElapsedTimer stats_timer;
-
-	//Selected server locale
-	uint8_t server_locale;
 
 	//Packet injection functions
 	void Inject(uint16_t opcode, StreamUtility & stream, bool encrypted) { if(security) security->Send(opcode, stream, encrypted); }
@@ -71,8 +71,15 @@ private:
 	//Reloads server menu items
 	void ReloadServers();
 
+	//Uses Google to translate text
+	std::map<QString, std::pair<QString, QString> > translations;
+	QString GoogleTranslate(QString text, QString to = "en");
+
+	//Current server
+	ServerStatsInfo current_server;
+
 private slots:
-		
+
 	//Data received
 	void readyRead();
 
@@ -87,6 +94,9 @@ private slots:
 
 	//Menu item clicked
 	void MenuBarClicked(QAction* action);
+
+	//Connect timeout
+	void ConnectTimeout();
 
 public:
 

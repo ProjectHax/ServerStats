@@ -1,9 +1,12 @@
 #include "serverstats.h"
 
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+
 ServerStatsConfig Config;
 
 //Constructor
-ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, flags), server_locale(0)
+ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, flags)
 {
 	//Sets up the user interface
 	ui.setupUi(this);
@@ -31,10 +34,13 @@ ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, fl
     connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(SocketState(QAbstractSocket::SocketState)));
 	connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 
-	//Connect timer
+	//Connect the timers
 	packet_timer = new QTimer(this);
 	connect(packet_timer, SIGNAL(timeout()), this, SLOT(ProcessPackets()));
 	packet_timer->start(50);	//50 milliseconds
+
+	connect_timeout = new QTimer(this);
+	connect(connect_timeout, SIGNAL(timeout()), this, SLOT(ConnectTimeout()));
 
 	//Load the config
 	QString path = QCoreApplication::applicationFilePath();
@@ -49,10 +55,14 @@ ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, fl
 	{
 		if(itr->second.connect)
 		{
-			//Set the locale
-			server_locale = itr->second.locale;
+			//Copy the server info for later use
+			current_server.hostname = itr->second.hostname;
+			current_server.port = itr->second.port;
+			current_server.locale = itr->second.locale;
+			current_server.translate = itr->second.translate;
 
 			//Connect
+			connect_timeout->start(5000);
 			socket->connectToHost(itr->second.hostname.c_str(), itr->second.port);
 			break;
 		}
@@ -86,6 +96,9 @@ void ServerStats::SocketState(QAbstractSocket::SocketState state)
 {
 	if(state == QAbstractSocket::ConnectedState)
 	{
+		//Connected so stop the connect timeout timer
+		connect_timeout->stop();
+
 		//New security api
 		security = boost::make_shared<SilkroadSecurity>();
 	}
@@ -107,10 +120,11 @@ void ServerStats::ProcessPackets()
 				case SERVER_VERSION:
 				{
 					StreamUtility w;
-					w.Write<uint8_t>(server_locale);	//Locale
-					w.Write<uint16_t>(9);				//Length of 'SR_Client'
+					w.Write<uint8_t>(current_server.locale);	//Locale
+					w.Write<uint16_t>(9);						//Length of 'SR_Client'
 					w.Write_Ascii("SR_Client");
-					w.Write<uint32_t>(123);				//Version
+					w.Write<uint32_t>(123);						//Version
+
 					Inject(0x6100, w, true);
 				}break;
 				//Update info
@@ -155,7 +169,7 @@ void ServerStats::ProcessPackets()
 						int max = 0;
 
 						//iSRO / SilkroadR
-						if(server_locale == 18 || server_locale == 65)
+						if(current_server.locale == 18 || current_server.locale == 65)
 						{
 							float ratio = r.Read<float>();
 							current = static_cast<int>(3500.0f * ratio);
@@ -171,7 +185,7 @@ void ServerStats::ProcessPackets()
 						//Server state (open or closed)
 						QString state = (r.Read<uint8_t>() == 1 ? "Open" : "Closed");
 
-						if(server_locale == 4 || server_locale == 23)
+						if(current_server.locale == 4 || current_server.locale == 23)
 							r.Read<uint8_t>();
 
 						//Add server to list
@@ -189,13 +203,13 @@ void ServerStats::ProcessPackets()
 
 					QTextCodec* codec = 0;
 
-					if(server_locale == 2)			//kSRO
+					if(current_server.locale == 2)			//kSRO
 						codec = QTextCodec::codecForName("EUC-KR");
-					else if(server_locale == 4)		//cSRO
+					else if(current_server.locale == 4)		//cSRO
 						codec = QTextCodec::codecForName("GB18030");
-					else if(server_locale == 15)	//jSRO
+					else if(current_server.locale == 15)	//jSRO
 						codec = QTextCodec::codecForName("EUC-JP");
-					else if(server_locale == 40)	//rSRO
+					else if(current_server.locale == 40)	//rSRO
 						codec = QTextCodec::codecForName("Windows-1251");
 
 					for(int x = 0; x < static_cast<int>(servers.size()); ++x)
@@ -208,8 +222,14 @@ void ServerStats::ProcessPackets()
 						else
 							name = servers[x].get<0>().c_str();
 
+						if(num_count == servers.size())
+							name = name.mid(1);
+
+						if(current_server.translate)
+							name = GoogleTranslate(name);
+
 						//Server name
-						ui.tableServerStats->setItem(x, 0, new QTableWidgetItem(num_count == servers.size() ? name.mid(1) : name));
+						ui.tableServerStats->setItem(x, 0, new QTableWidgetItem(name));
 
 						//Server state
 						ui.tableServerStats->setItem(x, 1, new QTableWidgetItem(servers[x].get<1>()));
@@ -296,10 +316,14 @@ void ServerStats::MenuBarClicked(QAction* action)
 				socket->close();
 			}
 
-			//Set the locale
-			server_locale = itr->second.locale;
+			//Copy the server info for later use
+			current_server.hostname = itr->second.hostname;
+			current_server.port = itr->second.port;
+			current_server.locale = itr->second.locale;
+			current_server.translate = itr->second.translate;
 
 			//Connect
+			connect_timeout->start(5000);
 			socket->connectToHost(itr->second.hostname.c_str(), itr->second.port);
 
 			//Clear server stats table
@@ -329,5 +353,62 @@ void ServerStats::ReloadServers()
 		QAction* action = new QAction(ui.menuServers);
 		action->setText(itr->first.c_str());
 		ui.menuServers->addAction(action);
+	}
+}
+
+//Uses Google to translate text
+QString ServerStats::GoogleTranslate(QString text, QString to)
+{
+	//Locate the translation in the map
+	std::map<QString, std::pair<QString, QString> >::iterator itr = translations.find(text);
+	if(itr != translations.end())
+	{
+		if(itr->second.first == to)
+			return itr->second.second;
+	}
+
+	//Translate URL
+	QString url = QString("http://translate.google.com/translate_a/t?client=t&text=%0&hl=%1&sl=auto&tl=%1&multires=1&prev=enter&oc=2&ssel=0&tsel=0&uptl=%1&sc=1").arg(text).arg(to);
+
+	QNetworkAccessManager manager;
+	QNetworkRequest request(url);
+	QNetworkReply* reply = manager.get(request);
+
+	//Get reply from Google
+	do
+	{
+		QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+	} while (!reply->isFinished());
+
+	//Convert to string
+	QString translation(reply->readAll());
+	reply->close();
+
+	//Free memory
+	delete reply;
+
+	//Remove [[[" from the beginning
+	translation = translation.replace("[[[\"", "");
+
+	//Extract final translated string
+	translation = translation.mid(0, translation.indexOf(",\"") - 1);
+
+	//Add the translation to the map so we don't need to make another web request for a translation
+	translations[text] = std::pair<QString, QString>(to, translation);
+
+	return translation;
+}
+
+//Connect timeout
+void ServerStats::ConnectTimeout()
+{
+	//Stop the timer
+	connect_timeout->stop();
+
+	if(socket->state() != QAbstractSocket::ConnectedState)
+	{
+		//Close the socket and report an error
+		socket->close();
+		QMessageBox::information(this, "Connect Error", QString("The Silkroad server [%0:%1] appears to be offline.").arg(current_server.hostname.c_str()).arg(current_server.port));
 	}
 }

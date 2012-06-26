@@ -33,6 +33,7 @@ void ServerEdit::Add()
 	QString name = ui.CustomName->text();
 	QString hostname = ui.Hostname->text();
 	bool connect = ui.ConnectStartup->isChecked();
+	bool translate = ui.Translate->isChecked();
 
 	uint16_t port = ui.Port->text().toUInt(&OK, 10);
 	if(!OK)
@@ -88,6 +89,7 @@ void ServerEdit::Add()
 		info.hostname = hostname.toAscii().data();
 		info.port = port;
 		info.connect = connect;
+		info.translate = translate;
 		Config.servers[name.toAscii().data()] = info;
 
 		if(OK)
@@ -197,11 +199,12 @@ void ServerEdit::ServerClicked(QListWidgetItem* item)
 		if(itr != Config.servers.end())
 		{
 			ui.CustomName->setText(item->text());
-			ui.comboBox->setCurrentIndex(ui.comboBox->count() - 1);
+			ui.Locales->setCurrentIndex(ui.Locales->count() - 1);
 			ui.Locale->setText(QString("%0").arg(static_cast<int>(itr->second.locale)));
 			ui.Hostname->setText(itr->second.hostname.c_str());
 			ui.Port->setText(QString("%0").arg(static_cast<int>(itr->second.port)));
 			ui.ConnectStartup->setChecked(itr->second.connect);
+			ui.Translate->setChecked(itr->second.translate);
 		}
 	}
 }

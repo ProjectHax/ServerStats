@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>390</width>
-    <height>220</height>
+    <height>250</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>390</width>
-    <height>220</height>
+    <height>250</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>390</width>
-    <height>220</height>
+    <height>250</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>190</y>
+     <y>220</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -51,8 +51,8 @@
   <widget class="QPushButton" name="btnRemove">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>190</y>
+     <x>240</x>
+     <y>220</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -67,7 +67,7 @@
      <x>150</x>
      <y>10</y>
      <width>231</width>
-     <height>171</height>
+     <height>201</height>
     </rect>
    </property>
    <property name="title">
@@ -89,7 +89,7 @@
      <number>64</number>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBox">
+   <widget class="QComboBox" name="Locales">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -263,11 +263,24 @@
       <x>10</x>
       <y>140</y>
       <width>121</width>
-      <height>17</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string>Connect on start up</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="Translate">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Translate to English</string>
     </property>
    </widget>
   </widget>
@@ -276,7 +289,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>comboBox</sender>
+   <sender>Locales</sender>
    <signal>currentIndexChanged(QString)</signal>
    <receiver>ServerEdit</receiver>
    <slot>LocaleChanged(QString)</slot>
@@ -299,7 +312,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>201</x>
-     <y>175</y>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>177</x>
@@ -314,8 +327,8 @@
    <slot>Remove()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>261</x>
-     <y>177</y>
+     <x>271</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>253</x>
@@ -345,5 +358,6 @@
   <slot>Add()</slot>
   <slot>Remove()</slot>
   <slot>ServerClicked(QListWidgetItem*)</slot>
+  <slot>LanguageChanged(QString)</slot>
  </slots>
 </ui>

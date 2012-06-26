@@ -28,12 +28,14 @@ struct ServerStatsInfo
 		ar & BOOST_SERIALIZATION_NVP(hostname);
 		ar & BOOST_SERIALIZATION_NVP(port);
 		ar & BOOST_SERIALIZATION_NVP(connect);
+		ar & BOOST_SERIALIZATION_NVP(translate);
     }
 
 	uint8_t locale;
 	std::string hostname;
 	uint16_t port;
 	bool connect;
+	bool translate;
 };
 
 class ServerStatsConfig

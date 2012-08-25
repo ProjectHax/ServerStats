@@ -6,6 +6,8 @@
 #include <QtGui/QWidget>
 #include "ui_serverstats.h"
 #include "serveredit.h"
+#include "ftpexportsettings.h"
+#include "fileexportsettings.h"
 
 #include <stdint.h>
 #include <string>
@@ -21,6 +23,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/thread.hpp>
 
 #include "shared/silkroad_security.h"
 #include "Config/config.h"
@@ -61,6 +64,9 @@ private:
 	//Connect timeout timer
 	QTimer* connect_timeout;
 
+	//Connect test
+	QTimer* connect_test;
+
 	//Timer for sending server stats request packet
 	QElapsedTimer stats_timer;
 
@@ -76,7 +82,10 @@ private:
 	QString GoogleTranslate(QString text, QString to = "en");
 
 	//Current server
-	ServerStatsInfo current_server;
+	std::pair<std::string, ServerStatsInfo> current_server;
+
+	//Connects to a server
+	void Connect();
 
 private slots:
 
@@ -89,6 +98,9 @@ private slots:
 	//Process packets
 	void ProcessPackets();
 
+	//Connection test when the socket is closed
+	void ConnectTest();
+
 	//Displays the server editor
 	void Edit();
 
@@ -97,6 +109,18 @@ private slots:
 
 	//Connect timeout
 	void ConnectTimeout();
+
+	//Displays the FTP export GUI
+	void ExportFTPSettings();
+
+	//Displays the file export GUI
+	void ExportFileSettings();
+
+	//Uploads the server stats via FTP
+	void ExportFTP(const QByteArray & data);
+
+	//Exports the server stats via file
+	void ExportFile(const QString & data);
 
 public:
 

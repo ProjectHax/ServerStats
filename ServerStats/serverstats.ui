@@ -51,8 +51,16 @@
     <addaction name="actionEdit"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuExport">
+    <property name="title">
+     <string>Export</string>
+    </property>
+    <addaction name="actionFTPSettings"/>
+    <addaction name="actionFile_Settings"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuServers"/>
+   <addaction name="menuExport"/>
   </widget>
   <widget class="QTableWidget" name="tableServerStats">
    <property name="geometry">
@@ -104,6 +112,16 @@
   <action name="actionEdit">
    <property name="text">
     <string>Edit</string>
+   </property>
+  </action>
+  <action name="actionFTPSettings">
+   <property name="text">
+    <string>FTP Settings</string>
+   </property>
+  </action>
+  <action name="actionFile_Settings">
+   <property name="text">
+    <string>File Settings</string>
    </property>
   </action>
  </widget>

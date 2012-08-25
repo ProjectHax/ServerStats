@@ -3,6 +3,10 @@
 //Constructor
 ServerStatsConfig::ServerStatsConfig()
 {
+	stats_ftp_port = 21;
+	stats_ftp_username = "anonymous";
+	stats_ftp_path = "/";
+	stats_ftp_transfer_mode = 0;
 }
 
 //Destructor
@@ -14,7 +18,7 @@ ServerStatsConfig::~ServerStatsConfig()
 void ServerStatsConfig::Save(const std::string & path)
 {
 	std::ofstream ofs(path.c_str(), std::ios::out | std::ios::binary);
-	configpath = path;
+	config_path = path;
 
 	if(ofs.is_open())
 	{
@@ -38,7 +42,7 @@ void ServerStatsConfig::Load(const std::string & path)
 {
 	//Open the XML file
 	std::ifstream ifs(path.c_str(), std::ios::in | std::ios::binary);
-	configpath = path;
+	config_path = path;
 
 	//Open check
 	if(ifs.is_open())

@@ -67,6 +67,24 @@
     <ClCompile Include="Config\config.cpp">
       <Filter>Config</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ftpexportsettings.cpp">
+      <Filter>Resource Files\Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ftpexportsettings.cpp">
+      <Filter>Resource Files\Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ftpexportsettings.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_fileexportsettings.cpp">
+      <Filter>Resource Files\Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_fileexportsettings.cpp">
+      <Filter>Resource Files\Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="fileexportsettings.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="serverstats.ui">
@@ -82,6 +100,18 @@
       <Filter>Resource Files\Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="serveredit.h">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ftpexportsettings.ui">
+      <Filter>Resource Files\Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ftpexportsettings.h">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="fileexportsettings.ui">
+      <Filter>Resource Files\Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="fileexportsettings.h">
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -106,6 +136,12 @@
     </ClInclude>
     <ClInclude Include="Config\config.h">
       <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_ftpexportsettings.h">
+      <Filter>Resource Files\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_fileexportsettings.h">
+      <Filter>Resource Files\Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

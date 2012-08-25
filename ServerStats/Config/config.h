@@ -48,6 +48,16 @@ private:
 	void serialize(Archive & ar, const uint32_t version = 1)
 	{
 		ar & BOOST_SERIALIZATION_NVP(servers);
+
+		ar & BOOST_SERIALIZATION_NVP(stats_ftp_server);
+		ar & BOOST_SERIALIZATION_NVP(stats_ftp_port);
+		ar & BOOST_SERIALIZATION_NVP(stats_ftp_username);
+		ar & BOOST_SERIALIZATION_NVP(stats_ftp_password);
+		ar & BOOST_SERIALIZATION_NVP(stats_ftp_path);
+		ar & BOOST_SERIALIZATION_NVP(stats_ftp_file_name);
+		ar & BOOST_SERIALIZATION_NVP(stats_ftp_transfer_mode);
+
+		ar & BOOST_SERIALIZATION_NVP(stats_file);
     }
 
 public:
@@ -65,10 +75,22 @@ public:
 	void Load(const std::string & path);
 	
 	//Config path
-	std::string configpath;
+	std::string config_path;
 
 	//Servers
 	std::map<std::string, ServerStatsInfo> servers;
+
+	//FTP
+	std::string stats_ftp_server;
+	uint16_t stats_ftp_port;
+	std::string stats_ftp_username;
+	std::string stats_ftp_password;
+	std::string stats_ftp_path;
+	std::string stats_ftp_file_name;
+	uint8_t stats_ftp_transfer_mode;
+
+	//File
+	std::string stats_file;
 };
 
 #endif

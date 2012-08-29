@@ -87,6 +87,9 @@ private:
 	//Connects to a server
 	void Connect();
 
+	//Connect retry
+	bool retry_5_seconds;
+
 private slots:
 
 	//Data received

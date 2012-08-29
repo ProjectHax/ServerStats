@@ -3,11 +3,12 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QFtp>
+#include <QErrorMessage>
 
 ServerStatsConfig Config;
 
 //Constructor
-ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, flags)
+ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, flags), retry_5_seconds(false)
 {
 	//Sets up the user interface
 	ui.setupUi(this);
@@ -469,8 +470,14 @@ void ServerStats::ConnectTimeout()
 			socket->close();
 
 		//Don't display an error message if an FTP server or file path has been configured
-		if((Config.stats_ftp_server.empty() || Config.stats_ftp_port != 0 || Config.stats_ftp_username.empty() || Config.stats_ftp_path.empty()) && (Config.stats_file.empty()))
-			QMessageBox::information(this, "Connect Error", QString("The Silkroad server [%0:%1] appears to be offline.").arg(current_server.second.hostname.c_str()).arg(current_server.second.port));
+		if((!retry_5_seconds) && (Config.stats_ftp_server.empty() || Config.stats_ftp_port != 0 || Config.stats_ftp_username.empty() || Config.stats_ftp_path.empty()) && (Config.stats_file.empty()))
+		{
+			if(QMessageBox::warning(this, "Connect Error", QString("The Silkroad server [%0:%1] appears to be offline.\nDo you wish to retry connecting every 5 seconds?").arg(current_server.second.hostname.c_str()).arg(current_server.second.port), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+			{
+				retry_5_seconds = true;
+				Connect();
+			}
+		}
 		else
 			Connect();
 	}
@@ -504,7 +511,7 @@ void ServerStats::ExportFTP(const QByteArray & data)
 		if(ftp.error() == QFtp::NoError || ftp.error() == QFtp::UnknownError)
 		{
 			//Delete the file
-			ftp.remove(Config.stats_ftp_file_name.c_str());
+			ftp.remove(QString("%0%1").arg(Config.stats_ftp_path.c_str()).arg(Config.stats_ftp_file_name.c_str()));
 			while(ftp.hasPendingCommands() || ftp.currentCommand() != QFtp::None)
 			{
 				//Process FTP events
@@ -515,7 +522,7 @@ void ServerStats::ExportFTP(const QByteArray & data)
 			}
 
 			//Upload the server stats
-			ftp.put(data, Config.stats_ftp_file_name.c_str(), QFtp::Binary);
+			ftp.put(data, QString("%0%1").arg(Config.stats_ftp_path.c_str()).arg(Config.stats_ftp_file_name.c_str()), QFtp::Binary);
 			while(ftp.hasPendingCommands() || ftp.currentCommand() != QFtp::None)
 			{
 				//Process FTP events

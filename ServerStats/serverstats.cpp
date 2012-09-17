@@ -508,22 +508,22 @@ void ServerStats::ExportFTP(const QByteArray & data)
 		ftp.connectToHost(Config.stats_ftp_server.c_str(), Config.stats_ftp_port);
 		ftp.login(Config.stats_ftp_username.c_str(), Config.stats_ftp_password.c_str());
 
-		if(ftp.error() == QFtp::NoError || ftp.error() == QFtp::UnknownError)
+		if(ftp.error() == QFtp::NoError)
 		{
 			//Delete the file
-			ftp.remove(QString("%0%1").arg(Config.stats_ftp_path.c_str()).arg(Config.stats_ftp_file_name.c_str()));
-			while(ftp.hasPendingCommands() || ftp.currentCommand() != QFtp::None)
+			/*ftp.remove(QString("%0%1").arg(Config.stats_ftp_path.c_str()).arg(Config.stats_ftp_file_name.c_str()));
+			while((ftp.hasPendingCommands() || ftp.currentCommand() != QFtp::None) && ftp.error() == QFtp::NoError)
 			{
 				//Process FTP events
 				QApplication::processEvents();
 
 				//Prevent high CPU usage
 				boost::this_thread::sleep(boost::posix_time::milliseconds(1));
-			}
+			}*/
 
 			//Upload the server stats
 			ftp.put(data, QString("%0%1").arg(Config.stats_ftp_path.c_str()).arg(Config.stats_ftp_file_name.c_str()), QFtp::Binary);
-			while(ftp.hasPendingCommands() || ftp.currentCommand() != QFtp::None)
+			while((ftp.hasPendingCommands() || ftp.currentCommand() != QFtp::None) && (ftp.error() == QFtp::NoError || ftp.error() == QFtp::UnknownError))
 			{
 				//Process FTP events
 				QApplication::processEvents();
@@ -532,9 +532,12 @@ void ServerStats::ExportFTP(const QByteArray & data)
 				boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 			}
 
-			//Close the FTP connection
-			ftp.close();
+			if(ftp.error() != QFtp::NoError && ftp.error() != QFtp::UnknownError)
+				QMessageBox::critical(this, QString("FTP Error - %0:%1").arg(Config.stats_ftp_server.c_str()).arg(Config.stats_ftp_port), ftp.errorString());
 		}
+
+		//Close the FTP connection
+		ftp.close();
 	}
 }
 

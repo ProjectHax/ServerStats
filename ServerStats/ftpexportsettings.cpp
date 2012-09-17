@@ -51,10 +51,13 @@ void FTPExportSettings::Save()
 	else
 		Config.stats_ftp_transfer_mode = QFtp::Active;
 
-	if(Config.stats_ftp_path.substr(Config.stats_ftp_path.length() - 1, 1) != "/")
+	if(!Config.stats_ftp_path.empty())
 	{
-		Config.stats_ftp_path += "/";
-		ui.Path->setText(Config.stats_ftp_path.c_str());
+		if(Config.stats_ftp_path.substr(Config.stats_ftp_path.length() - 1, 1) != "/")
+		{
+			Config.stats_ftp_path += "/";
+			ui.Path->setText(Config.stats_ftp_path.c_str());
+		}
 	}
 
 	//Save

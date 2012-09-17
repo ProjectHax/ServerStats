@@ -31,6 +31,15 @@
     <Filter Include="Config">
       <UniqueIdentifier>{36b47127-3543-4a11-bdba-a9a0607eda9b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Export">
+      <UniqueIdentifier>{6cdb8727-5450-4d39-8000-56ee8ce34b3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Export\FTP">
+      <UniqueIdentifier>{efb30a7b-0dca-47a2-a6a4-e1e17602a6f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Export\File">
+      <UniqueIdentifier>{8d428aa3-52b8-45a1-a9b2-c6aba7229703}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_serverstats.cpp">
@@ -73,17 +82,17 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ftpexportsettings.cpp">
       <Filter>Resource Files\Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="ftpexportsettings.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_fileexportsettings.cpp">
       <Filter>Resource Files\Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_fileexportsettings.cpp">
       <Filter>Resource Files\Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="ftpexportsettings.cpp">
+      <Filter>Resource Files\Export\FTP</Filter>
+    </ClCompile>
     <ClCompile Include="fileexportsettings.cpp">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Export\File</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -105,14 +114,14 @@
     <CustomBuild Include="ftpexportsettings.ui">
       <Filter>Resource Files\Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="ftpexportsettings.h">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="fileexportsettings.ui">
       <Filter>Resource Files\Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="ftpexportsettings.h">
+      <Filter>Resource Files\Export\FTP</Filter>
+    </CustomBuild>
     <CustomBuild Include="fileexportsettings.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Export\File</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

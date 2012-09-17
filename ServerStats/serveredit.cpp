@@ -138,7 +138,7 @@ void ServerEdit::LocaleChanged(QString text)
 	}
 	else if(text == "vSRO")
 	{
-		ui.Locale->setText("23");
+		ui.Locale->setText("22");
 		ui.Hostname->clear();
 	}
 	else if(text == "rSRO")

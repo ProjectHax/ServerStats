@@ -163,7 +163,7 @@ void ServerStats::ProcessPackets()
 					w.Write<uint8_t>(current_server.second.locale);	//Locale
 					w.Write<uint16_t>(9);							//Length of 'SR_Client'
 					w.Write_Ascii("SR_Client");
-					w.Write<uint32_t>(123);							//Version
+					w.Write<uint32_t>(1);							//Version
 
 					Inject(0x6100, w, true);
 				}break;

@@ -1,9 +1,25 @@
 Silkroad Server Stats
 
-Requirements:
+Windows Requirements
 Visual Studio 2010
-Qt
+Qt 4.8.x
 Boost
 
 You will need to make sure that both the boost path and Qt plugin lib
 paths are both setup correctly in the Visual C++ settings.
+
+Linux Requirements
+gcc/g++
+Qt 4.x.x
+Boost
+
+Debian Compile Guide
+1. Install Qt SDK
+apt-get install qt-sdk
+
+2. Install boost
+apt-get install libboost-*
+
+3. Open ServerStats.pro with the QtCreator
+
+4. Ctrl + R

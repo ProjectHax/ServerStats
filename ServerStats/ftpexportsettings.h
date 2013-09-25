@@ -3,8 +3,7 @@
 #ifndef FTPEXPORTSETTINGS_H
 #define FTPEXPORTSETTINGS_H
 
-#include <QDialog>
-#include "ui_ftpexportsettings.h"
+#include "stdafx.h"
 
 class FTPExportSettings : public QDialog
 {

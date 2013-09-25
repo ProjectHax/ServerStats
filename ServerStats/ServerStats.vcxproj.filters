@@ -40,6 +40,9 @@
     <Filter Include="Resource Files\Export\File">
       <UniqueIdentifier>{8d428aa3-52b8-45a1-a9b2-c6aba7229703}</UniqueIdentifier>
     </Filter>
+    <Filter Include="stdafx">
+      <UniqueIdentifier>{fcb9b42c-18c8-41ce-8ab8-b49b901a90bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_serverstats.cpp">
@@ -93,6 +96,9 @@
     </ClCompile>
     <ClCompile Include="fileexportsettings.cpp">
       <Filter>Resource Files\Export\File</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>stdafx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_fileexportsettings.h">
       <Filter>Resource Files\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>stdafx</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

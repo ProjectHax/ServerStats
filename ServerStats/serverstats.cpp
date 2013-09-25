@@ -1,9 +1,4 @@
-#include "serverstats.h"
-
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QFtp>
-#include <QErrorMessage>
+#include "stdafx.h"
 
 ServerStatsConfig Config;
 
@@ -122,6 +117,14 @@ void ServerStats::Connect()
 {
 	//Invalidate the timer so no packets will be sent before the first server stats packet is received
 	stats_timer.invalidate();
+
+	//Stop the connect timeout timer
+	connect_timeout->stop();
+
+	//Close, abort, reset just to be safe
+	socket->close();
+	socket->abort();
+	socket->reset();
 
 	//Connect
 	connect_timeout->start(5000);
@@ -337,7 +340,7 @@ void ServerStats::ProcessPackets()
 		{
 			//Send packet
 			std::vector<uint8_t> packet = security->GetPacketToSend();
-			socket->write(reinterpret_cast<char*>(&packet[0]), packet.size());
+			socket->write(reinterpret_cast<const char*>(&packet[0]), packet.size());
 		}
 	}
 }
@@ -467,12 +470,16 @@ void ServerStats::ConnectTimeout()
 
 		//Disconnect first if there is an active connection
 		if(socket->state() != QAbstractSocket::UnconnectedState)
+		{
 			socket->close();
+			socket->abort();
+			socket->reset();
+		}
 
 		//Don't display an error message if an FTP server or file path has been configured
 		if((!retry_5_seconds) && (Config.stats_ftp_server.empty() || Config.stats_ftp_port != 0 || Config.stats_ftp_username.empty() || Config.stats_ftp_path.empty()) && (Config.stats_file.empty()))
 		{
-			if(QMessageBox::warning(this, "Connect Error", QString("The Silkroad server [%0:%1] appears to be offline.\nDo you wish to retry connecting every 5 seconds?").arg(current_server.second.hostname.c_str()).arg(current_server.second.port), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+			if(QMessageBox::warning(this, "Connect Error", QString("The Silkroad server [%0:%1] appears to be offline.\nDo you wish to retry every 5 seconds?").arg(current_server.second.hostname.c_str()).arg(current_server.second.port), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 			{
 				retry_5_seconds = true;
 				Connect();

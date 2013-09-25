@@ -1,10 +1,4 @@
-#include "silkroad_security.h"
-#include "blowfish.h"
-#include <boost/random.hpp>
-#include <exception>
-#include <list>
-#include <vector>
-#include <set>
+#include "stdafx.h"
 
 //-----------------------------------------------------------------------------
 
@@ -130,8 +124,9 @@ static bool init_security_table = GenerateSecurityTable();
 
 uint64_t rng()
 {
-	static boost::mt19937 randgen;
-	static boost::uniform_int< uint64_t > range( 0, 0xFFFFFFFFFFFFFFFF );
+	boost::random_device dev;
+	boost::mt19937 randgen(dev);
+	boost::uniform_int< uint64_t > range( 0, 0xFFFFFFFFFFFFFFFF );
 	boost::variate_generator< boost::mt19937 &, boost::uniform_int< uint64_t > > die( randgen, range );
 	return die();
 }

@@ -1,10 +1,4 @@
-#include "ftpexportsettings.h"
-#include "Config/config.h"
-
-#include <boost/lexical_cast.hpp>
-#include <QMessageBox>
-#include <QFtp>
-#include <QIntValidator>
+#include "stdafx.h"
 
 extern ServerStatsConfig Config;
 

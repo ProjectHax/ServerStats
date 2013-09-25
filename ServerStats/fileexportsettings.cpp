@@ -1,8 +1,4 @@
-#include "fileexportsettings.h"
-
-#include "Config/config.h"
-#include <QMessageBox>
-#include <QFileDialog>
+#include "stdafx.h"
 
 extern ServerStatsConfig Config;
 

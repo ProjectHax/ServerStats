@@ -1,17 +1,13 @@
-#include "stdio.h"
-#include "serverstats.h"
-#include <QtGui/QApplication>
+#include "stdafx.h"
 
 //This is used for displaying the correct characters for the Korean, Chinese, and Japanese languages
-Q_IMPORT_PLUGIN(qkrcodecs)
-Q_IMPORT_PLUGIN(qcncodecs)
-Q_IMPORT_PLUGIN(qjpcodecs)
+#ifdef _WIN32
+	Q_IMPORT_PLUGIN(qkrcodecs)
+	Q_IMPORT_PLUGIN(qcncodecs)
+	Q_IMPORT_PLUGIN(qjpcodecs)
+#endif
 
 #if _WIN32 && _DEBUG
-#include "io.h"
-#include "fcntl.h"
-#include "windows.h"
-
 void CreateConsole(const char *winTitle)
 {
 	//http://www.gamedev.net/community/forums/viewreply.asp?ID=1958358

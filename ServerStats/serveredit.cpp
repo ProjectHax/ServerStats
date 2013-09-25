@@ -1,7 +1,4 @@
-#include "serveredit.h"
-
-#include <QIntValidator>
-#include <QMessageBox>
+#include "stdafx.h"
 
 extern ServerStatsConfig Config;
 
@@ -12,7 +9,7 @@ ServerEdit::ServerEdit(QWidget *parent) : QDialog(parent)
 	ui.setupUi(this);
 
 	//Integer validators
-	ui.Port->setValidator(new QIntValidator(1, 65536, this));
+	ui.Port->setValidator(new QIntValidator(1, 65535, this));
 	ui.Locale->setValidator(new QIntValidator(1, 100, this));
 
 	//Load servers
@@ -28,21 +25,20 @@ ServerEdit::~ServerEdit()
 //Adds a new server
 void ServerEdit::Add()
 {
-	bool OK = false;
-
 	QString name = ui.CustomName->text();
 	QString hostname = ui.Hostname->text();
 	bool connect = ui.ConnectStartup->isChecked();
 	bool translate = ui.Translate->isChecked();
 
-	uint16_t port = ui.Port->text().toUInt(&OK, 10);
+	bool OK;
+	uint16_t port = ui.Port->text().toUShort(&OK, 10);
 	if(!OK)
 	{
 		QMessageBox::warning(this, "Error", "Could not convert the port to a decimal.");
 		return;
 	}
 
-	uint8_t locale = ui.Locale->text().toUInt(&OK, 10);
+	uint8_t locale = static_cast<uint8_t>(ui.Locale->text().toUInt(&OK, 10));
 	if(!OK)
 	{
 		QMessageBox::warning(this, "Error", "Could not convert the locale to a decimal.");

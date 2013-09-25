@@ -3,10 +3,7 @@
 #ifndef SERVEREDIT_H
 #define SERVEREDIT_H
 
-#include <QDialog>
-#include "ui_serveredit.h"
-
-#include "Config/config.h"
+#include "stdafx.h"
 
 class ServerEdit : public QDialog
 {

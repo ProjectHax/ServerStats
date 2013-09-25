@@ -1,8 +1,4 @@
-#include "stream_utility.h"
-#include <iostream>
-#include <iomanip>
-#include <cctype>
-#include <sstream>
+#include "stdafx.h"
 
 //-----------------------------------------------------------------------------
 

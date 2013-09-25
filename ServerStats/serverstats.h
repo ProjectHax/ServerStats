@@ -3,30 +3,7 @@
 #ifndef SERVERSTATS_H
 #define SERVERSTATS_H
 
-#include <QtGui/QWidget>
-#include "ui_serverstats.h"
-#include "serveredit.h"
-#include "ftpexportsettings.h"
-#include "fileexportsettings.h"
-
-#include <stdint.h>
-#include <string>
-#include <vector>
-
-#include <QtNetwork>
-#include <QTimer>
-#include <QElapsedTimer>
-#include <QTableWidgetItem>
-#include <QMessageBox>
-#include <QClipboard>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/thread.hpp>
-
-#include "shared/silkroad_security.h"
-#include "Config/config.h"
+#include "stdafx.h"
 
 enum Server_Opcodes : uint16_t
 {

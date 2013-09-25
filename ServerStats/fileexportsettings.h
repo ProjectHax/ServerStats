@@ -3,8 +3,7 @@
 #ifndef FILEEXPORTSETTINGS_H
 #define FILEEXPORTSETTINGS_H
 
-#include <QDialog>
-#include "ui_fileexportsettings.h"
+#include "stdafx.h"
 
 class FileExportSettings : public QDialog
 {

@@ -35,6 +35,9 @@ private:
 	//Silkroad security
 	boost::shared_ptr<SilkroadSecurity> security;
 
+	//Tray icon
+	QSystemTrayIcon* tray;
+
 	//Packet processing timer
 	QTimer* packet_timer;
 
@@ -101,6 +104,12 @@ private slots:
 
 	//Exports the server stats via file
 	void ExportFile(const QString & data);
+
+	void iconActivated(QSystemTrayIcon::ActivationReason reason);
+
+protected:
+
+	void changeEvent(QEvent* event);
 
 public:
 

@@ -42,6 +42,7 @@
 #include <QFileDialog>
 #include <QIntValidator>
 #include <QtPlugin>
+#include <QSystemTrayIcon>
 
 //Boost
 #include <boost/shared_ptr.hpp>

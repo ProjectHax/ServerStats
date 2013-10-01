@@ -11,6 +11,12 @@ ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, fl
 	//Invalidate the timer so no packets will be sent before the first server stats packet is received
 	stats_timer.invalidate();
 
+	//Tray icon
+	tray = new QSystemTrayIcon(this);
+	tray->setIcon(QIcon(":/ServerStats/icon.png"));
+	tray->setVisible(true);
+	connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+
 	//Connect menu items
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 	connect(ui.actionEdit, SIGNAL(triggered()), this, SLOT(Edit()));
@@ -77,6 +83,7 @@ ServerStats::~ServerStats()
 	packet_timer->stop();
 	delete socket;
 	delete packet_timer;
+	delete tray;
 }
 
 //Data received
@@ -101,6 +108,11 @@ void ServerStats::SocketState(QAbstractSocket::SocketState state)
 
 		//New security api
 		security = boost::make_shared<SilkroadSecurity>();
+
+		if(retry_5_seconds)
+		{
+			tray->showMessage("Connected", QString("Succesfully connected to\n%0:%1").arg(current_server.second.hostname.c_str()).arg(current_server.second.port), QSystemTrayIcon::Information, 5000);
+		}
 	}
 	else if(state == QAbstractSocket::ClosingState)
 	{
@@ -122,7 +134,7 @@ void ServerStats::Connect()
 	connect_timeout->stop();
 
 	//Close, abort, reset just to be safe
-	socket->close();
+	socket->disconnectFromHost();
 	socket->abort();
 	socket->reset();
 
@@ -362,8 +374,10 @@ void ServerStats::Edit()
 //Menu item clicked
 void ServerStats::MenuBarClicked(QAction* action)
 {
+	static const QList<QString> menu_items = QList<QString>() << "File" << "Servers" << "Exit" << "Edit" << "Export" << "FTP Settings" << "File Settings";
+
 	QString text = action->text();
-	if(text != "File" && text != "Servers" && text != "Exit" && text != "Edit" && text != "Export" && text != "FTP Settings" && text != "File Settings")
+	if(menu_items.indexOf(text) == -1)
 	{
 		//Locate server
 		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(text.toAscii().data());
@@ -377,7 +391,11 @@ void ServerStats::MenuBarClicked(QAction* action)
 		{
 			//Disconnect first if there is an active connection
 			if(socket->state() != QAbstractSocket::UnconnectedState)
-				socket->close();
+			{
+				socket->disconnectFromHost();
+				socket->abort();
+				socket->reset();
+			}
 
 			//Copy the server info for later use
 			current_server.second.hostname = itr->second.hostname;
@@ -471,7 +489,7 @@ void ServerStats::ConnectTimeout()
 		//Disconnect first if there is an active connection
 		if(socket->state() != QAbstractSocket::UnconnectedState)
 		{
-			socket->close();
+			socket->disconnectFromHost();
 			socket->abort();
 			socket->reset();
 		}
@@ -564,6 +582,31 @@ void ServerStats::ExportFile(const QString & data)
 			//Close
 			out.flush();
 			file.close();
+		}
+	}
+}
+
+void ServerStats::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+	//Tray icon clicked
+	if(reason == QSystemTrayIcon::Trigger)
+	{
+		//Show the ServerStats window
+		showNormal();
+		activateWindow();
+	}
+}
+
+void ServerStats::changeEvent(QEvent* event)
+{
+	if(event->type() == QEvent::WindowStateChange)
+	{
+		//ServerStats window minimized
+		if(isMinimized())
+		{
+			//Hide the window
+			QTimer::singleShot(250, this, SLOT(hide()));
+			event->ignore();
 		}
 	}
 }

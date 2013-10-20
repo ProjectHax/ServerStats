@@ -44,9 +44,9 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\boost_1_54_0;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\boost_1_54_0\stage\lib;C:\Qt\plugins\codecs;$(LibraryPath)</LibraryPath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\boost_1_54_0;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\boost_1_54_0\stage\lib;C:\Qt\plugins\codecs;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\boost_1_54_0\stage\lib;C:\Qt5\qtbase\plugins\platforms;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\boost_1_54_0;C:\Qt5\qtbase\plugins\platforms;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\boost_1_54_0\stage\lib;C:\Qt5\qtbase\plugins\platforms;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -55,7 +55,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -67,7 +67,7 @@
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmaind.lib;QtCored.lib;QtGuid.lib;QtNetworkd.lib;qcncodecsd.lib;qkrcodecsd.lib;qjpcodecsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmaind.lib;qwindowsd.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5PlatformSupportd.lib;Qt5Networkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -91,7 +91,7 @@
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmain.lib;QtCore.lib;QtGui.lib;QtNetwork.lib;qcncodecs.lib;qkrcodecs.lib;qjpcodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmain.lib;qwindows.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib;Qt5Network.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -308,7 +308,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" QtVersion_x0020_Win32="Qt" />
+      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" QtVersion_x0020_Win32="Qt" Qt5Version_x0020_Win32="Qt5" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

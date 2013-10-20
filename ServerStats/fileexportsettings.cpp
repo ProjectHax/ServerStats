@@ -18,7 +18,7 @@ FileExportSettings::~FileExportSettings()
 void FileExportSettings::Save()
 {
 	//Copy the path
-	Config.stats_file = ui.Path->text().toAscii().data();
+	Config.stats_file = ui.Path->text().toLatin1().data();
 
 	Config.Save(Config.config_path);
 	QMessageBox::information(this, "Success", "File settings have been saved");

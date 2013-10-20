@@ -1,10 +1,7 @@
 #include "stdafx.h"
 
-//This is used for displaying the correct characters for the Korean, Chinese, and Japanese languages
 #ifdef _WIN32
-	Q_IMPORT_PLUGIN(qkrcodecs)
-	Q_IMPORT_PLUGIN(qcncodecs)
-	Q_IMPORT_PLUGIN(qjpcodecs)
+	Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
 #endif
 
 #if _WIN32 && _DEBUG

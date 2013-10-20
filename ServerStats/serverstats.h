@@ -18,6 +18,18 @@ enum Client_Opcodes : uint16_t
 	CLIENT_SERVER_STATS	=		0x6101		//Server stats request
 };
 
+//Silkroad Locales
+enum SilkroadLocales : uint8_t
+{
+	Locale_iSRO = 18,				//International Silkroad
+	Locale_SilkroadR = 65,			//SilkroadR
+	Locale_kSRO = 2,				//Korean Silkroad
+	Locale_rSRO = 40,				//Russian Silkroad
+	Locale_cSRO = 4,				//Chinese Silkroad
+	Locale_vSRO = 22,				//Vietnamese Silkroad
+	Locale_jSRO = 15				//Japanese Silkroad
+};
+
 class ServerStats : public QWidget
 {
 	Q_OBJECT
@@ -114,7 +126,7 @@ protected:
 public:
 
 	//Constructor
-	ServerStats(QWidget *parent = 0, Qt::WFlags flags = 0);
+	ServerStats(QWidget *parent = 0);
 
 	//Destructor
 	~ServerStats();

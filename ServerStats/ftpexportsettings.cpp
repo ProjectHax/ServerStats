@@ -18,7 +18,7 @@ FTPExportSettings::FTPExportSettings(QWidget *parent) : QDialog(parent)
 	ui.Path->setText(Config.stats_ftp_path.c_str());
 	ui.FileName->setText(Config.stats_ftp_file_name.c_str());
 
-	if(Config.stats_ftp_transfer_mode == QFtp::Passive)
+	if(Config.stats_ftp_transfer_mode == 0)
 		ui.TransferMode->setCurrentIndex(0);
 	else
 		ui.TransferMode->setCurrentIndex(1);
@@ -33,17 +33,17 @@ FTPExportSettings::~FTPExportSettings()
 void FTPExportSettings::Save()
 {
 	//Copy the server info
-	Config.stats_ftp_server = ui.Hostname->text().toAscii().data();
-	Config.stats_ftp_port = ui.Port->text().length() ? boost::lexical_cast<uint16_t>(ui.Port->text().toAscii().data()) : 0;
-	Config.stats_ftp_username = ui.Username->text().toAscii().data();
-	Config.stats_ftp_password = ui.Password->text().toAscii().data();
-	Config.stats_ftp_path = ui.Path->text().toAscii().data();
-	Config.stats_ftp_file_name = ui.FileName->text().toAscii().data();
+	Config.stats_ftp_server = ui.Hostname->text().toLatin1().data();
+	Config.stats_ftp_port = ui.Port->text().length() ? boost::lexical_cast<uint16_t>(ui.Port->text().toLatin1().data()) : 0;
+	Config.stats_ftp_username = ui.Username->text().toLatin1().data();
+	Config.stats_ftp_password = ui.Password->text().toLatin1().data();
+	Config.stats_ftp_path = ui.Path->text().toLatin1().data();
+	Config.stats_ftp_file_name = ui.FileName->text().toLatin1().data();
 
 	if(ui.TransferMode->currentIndex() == 0)
-		Config.stats_ftp_transfer_mode = QFtp::Passive;
+		Config.stats_ftp_transfer_mode = 0;
 	else
-		Config.stats_ftp_transfer_mode = QFtp::Active;
+		Config.stats_ftp_transfer_mode = 1;
 
 	if(!Config.stats_ftp_path.empty())
 	{

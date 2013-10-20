@@ -66,7 +66,7 @@ void ServerEdit::Add()
 		OK = false;
 
 		//See if the server name exists already
-		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(name.toAscii().data());
+		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(name.toLatin1().data());
 		if(itr != Config.servers.end())
 			OK = true;
 
@@ -82,11 +82,11 @@ void ServerEdit::Add()
 		//Add the new server to the map
 		ServerStatsInfo info;
 		info.locale = locale;
-		info.hostname = hostname.toAscii().data();
+		info.hostname = hostname.toLatin1().data();
 		info.port = port;
 		info.connect = connect;
 		info.translate = translate;
-		Config.servers[name.toAscii().data()] = info;
+		Config.servers[name.toLatin1().data()] = info;
 
 		if(OK)
 		{
@@ -110,7 +110,7 @@ void ServerEdit::Remove()
 	if(item)
 	{
 		//Remove server from map
-		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(item->text().toAscii().data());
+		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(item->text().toLatin1().data());
 		if(itr != Config.servers.end())
 			Config.servers.erase(itr);
 
@@ -191,7 +191,7 @@ void ServerEdit::ServerClicked(QListWidgetItem* item)
 	if(item)
 	{
 		//Find the server in the map
-		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(item->text().toAscii().data());
+		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(item->text().toLatin1().data());
 		if(itr != Config.servers.end())
 		{
 			ui.CustomName->setText(item->text());

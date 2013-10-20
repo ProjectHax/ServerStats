@@ -8,7 +8,7 @@
 
 	#include "io.h"
 	#include "fcntl.h"
-	#include "windows.h"
+	//#include "windows.h"
 #endif
 
 #include <stdio.h>
@@ -26,23 +26,22 @@
 #include <iterator>
 
 //Qt
-#include <QApplication>
-#include <QDialog>
-#include <QWidget>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QTableWidgetItem>
+#include <QtWidgets/QSystemTrayIcon>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
-#include <QFtp>
-#include <QErrorMessage>
 #include <QtNetwork>
 #include <QTimer>
 #include <QElapsedTimer>
-#include <QTableWidgetItem>
-#include <QMessageBox>
 #include <QClipboard>
-#include <QFileDialog>
+#include <QtWidgets/QFileDialog>
 #include <QIntValidator>
 #include <QtPlugin>
-#include <QSystemTrayIcon>
+
 
 //Boost
 #include <boost/shared_ptr.hpp>

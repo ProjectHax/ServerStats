@@ -3,7 +3,7 @@
 ServerStatsConfig Config;
 
 //Constructor
-ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, flags), retry_5_seconds(false)
+ServerStats::ServerStats(QWidget *parent) : QWidget(parent), retry_5_seconds(false)
 {
 	//Sets up the user interface
 	ui.setupUi(this);
@@ -53,7 +53,7 @@ ServerStats::ServerStats(QWidget *parent, Qt::WFlags flags) : QWidget(parent, fl
 	//Load the config
 	QString path = QCoreApplication::applicationFilePath();
 	path = path.mid(0, path.lastIndexOf("/")) + "/config.xml";
-	Config.Load(path.toAscii().data());
+	Config.Load(path.toLatin1().data());
 
 	//Find the server that will connect on start up
 	for(std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.begin(); itr != Config.servers.end(); ++itr)
@@ -194,7 +194,7 @@ void ServerStats::ProcessPackets()
 					const uint8_t & locale = current_server.second.locale;
 
 					size_t num_count = 0;
-					std::vector<boost::tuple<std::string, QString, int, int> > servers;
+					std::vector<boost::tuple<std::string, QString, int, int, float> > servers;
 
 					uint8_t entry = r.Read<uint8_t>();
 					while(entry == 1)
@@ -223,12 +223,15 @@ void ServerStats::ProcessPackets()
 						
 						int current = 0;
 						int max = 0;
+						float ratio = 0.0f;
 
 						//iSRO / SilkroadR
 						if(locale == 18 || locale == 65)
 						{
-							float ratio = r.Read<float>();
+							ratio = r.Read<float>();
 							current = static_cast<int>(3500.0f * ratio);
+
+							ratio *= 100;
 							max = 3500;
 						}
 						//Everything else
@@ -236,6 +239,7 @@ void ServerStats::ProcessPackets()
 						{
 							current = static_cast<int>(r.Read<uint16_t>());
 							max = static_cast<int>(r.Read<uint16_t>());
+							ratio = static_cast<float>(current * 100 / max);
 						}
 
 						//Server state (open or closed)
@@ -245,27 +249,27 @@ void ServerStats::ProcessPackets()
 							r.Read<uint8_t>();
 
 						//Add server to list
-						servers.push_back(boost::tuple<std::string, QString, int, int>(name, state, current, max));
+						servers.push_back(boost::tuple<std::string, QString, int, int, float>(name, state, current, max, ratio));
 
 						//Next
 						entry = r.Read<uint8_t>();
 					}
 
 					//Set the number of rows
-					ui.tableServerStats->setRowCount(servers.size());
+					ui.tableServerStats->setRowCount(static_cast<int>(servers.size()));
 
 					//Disable sorting so the rows don't get messed up when updating the servers
 					ui.tableServerStats->setSortingEnabled(false);
 
 					QTextCodec* codec = 0;
 
-					if(locale == 2)			//kSRO
+					if(locale == Locale_kSRO)			//kSRO
 						codec = QTextCodec::codecForName("EUC-KR");
-					else if(locale == 4)	//cSRO
+					else if(locale == Locale_cSRO)		//cSRO
 						codec = QTextCodec::codecForName("GB18030");
-					else if(locale == 15)	//jSRO
+					else if(locale == Locale_jSRO)		//jSRO
 						codec = QTextCodec::codecForName("EUC-JP");
-					else if(locale == 40)	//rSRO
+					else if(locale == Locale_rSRO)		//rSRO
 						codec = QTextCodec::codecForName("Windows-1251");
 
 					//HTML server stats
@@ -301,19 +305,32 @@ void ServerStats::ProcessPackets()
 						html += "</tr>\n";
 
 						//Server name
-						ui.tableServerStats->setItem(x, 0, new QTableWidgetItem(name));
+						QTableWidgetItem* item = new QTableWidgetItem(name);
+						ui.tableServerStats->setItem(x, 0, item);
 
 						//Server state
-						ui.tableServerStats->setItem(x, 1, new QTableWidgetItem(servers[x].get<1>()));
+						item = new QTableWidgetItem(servers[x].get<1>());
+						ui.tableServerStats->setItem(x, 1, item);
+
+						QColor color;
+
+						if(servers[x].get<4>() >= 90.0f)
+							color = QColor(Qt::red);
+						else if(servers[x].get<4>() >= 50.0f)
+							color = QColor(208, 126, 2);
+						else
+							color = QColor(Qt::darkGreen);
 
 						//Current
-						QTableWidgetItem* item = new QTableWidgetItem;
+						item = new QTableWidgetItem;
 						item->setData(Qt::DisplayRole, servers[x].get<2>());
+						item->setData(Qt::ForegroundRole, color);
 						ui.tableServerStats->setItem(x, 2, item);
 
 						//Max
 						item = new QTableWidgetItem;
 						item->setData(Qt::DisplayRole, servers[x].get<3>());
+						item->setData(Qt::ForegroundRole, color);
 						ui.tableServerStats->setItem(x, 3, item);
 					}
 
@@ -323,7 +340,7 @@ void ServerStats::ProcessPackets()
 					ui.tableServerStats->setSortingEnabled(true);
 
 					//Upload stats via FTP
-					ExportFTP(QByteArray(html.toAscii().data()));
+					ExportFTP(QByteArray(html.toLatin1().data()));
 
 					//Export the stats via file
 					ExportFile(html);
@@ -380,7 +397,7 @@ void ServerStats::MenuBarClicked(QAction* action)
 	if(menu_items.indexOf(text) == -1)
 	{
 		//Locate server
-		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(text.toAscii().data());
+		std::map<std::string, ServerStatsInfo>::iterator itr = Config.servers.find(text.toLatin1().data());
 
 		//Not found
 		if(itr == Config.servers.end())
@@ -483,7 +500,7 @@ void ServerStats::ConnectTimeout()
 	{
 		//Display server is offline message
 		QString offline = "<b>Server is offline</b>";
-		ExportFTP(offline.toAscii().data());
+		ExportFTP(offline.toLatin1().data());
 		ExportFile(offline);
 
 		//Disconnect first if there is an active connection
@@ -526,7 +543,7 @@ void ServerStats::ExportFileSettings()
 void ServerStats::ExportFTP(const QByteArray & data)
 {
 	//Make sure the FTP settings are set correctly before attempting to upload the stats info
-	if(!Config.stats_ftp_server.empty() && Config.stats_ftp_port != 0 && !Config.stats_ftp_username.empty() && !Config.stats_ftp_path.empty())
+	/*if(!Config.stats_ftp_server.empty() && Config.stats_ftp_port != 0 && !Config.stats_ftp_username.empty() && !Config.stats_ftp_path.empty())
 	{
 		QFtp ftp(this);
 		ftp.setTransferMode((QFtp::TransferMode)Config.stats_ftp_transfer_mode);
@@ -535,17 +552,6 @@ void ServerStats::ExportFTP(const QByteArray & data)
 
 		if(ftp.error() == QFtp::NoError)
 		{
-			//Delete the file
-			/*ftp.remove(QString("%0%1").arg(Config.stats_ftp_path.c_str()).arg(Config.stats_ftp_file_name.c_str()));
-			while((ftp.hasPendingCommands() || ftp.currentCommand() != QFtp::None) && ftp.error() == QFtp::NoError)
-			{
-				//Process FTP events
-				QApplication::processEvents();
-
-				//Prevent high CPU usage
-				boost::this_thread::sleep(boost::posix_time::milliseconds(1));
-			}*/
-
 			//Upload the server stats
 			ftp.put(data, QString("%0%1").arg(Config.stats_ftp_path.c_str()).arg(Config.stats_ftp_file_name.c_str()), QFtp::Binary);
 			while((ftp.hasPendingCommands() || ftp.currentCommand() != QFtp::None) && (ftp.error() == QFtp::NoError || ftp.error() == QFtp::UnknownError))
@@ -563,7 +569,7 @@ void ServerStats::ExportFTP(const QByteArray & data)
 
 		//Close the FTP connection
 		ftp.close();
-	}
+	}*/
 }
 
 //Exports the server stats via file

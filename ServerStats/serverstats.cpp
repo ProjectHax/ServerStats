@@ -212,7 +212,7 @@ void ServerStats::ProcessPackets()
 					while(entry)
 					{
 						//Server ID
-						uint16_t id = r.Read<uint16_t>();
+						r.SeekRead(2, Seek_Forward);
 
 						//Server name
 						std::string name = r.Read_Ascii(r.Read<uint16_t>());

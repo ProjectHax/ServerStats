@@ -7,6 +7,8 @@ FTPExportSettings::FTPExportSettings(QWidget *parent) : QDialog(parent)
 {
 	ui.setupUi(this);
 
+	QMessageBox::warning(this, "FTP", "Qt 5.1+ no longer contains the QFtp classes and this requires doing some hackery to get them back.\n\nFTP support has been disabled until they add a suitable replacement.");
+
 	QIntValidator* validator = new QIntValidator(1, 65535, this);
 	ui.Port->setValidator(validator);
 
